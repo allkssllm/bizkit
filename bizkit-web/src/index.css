@@ -1,0 +1,151 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  /* Retain table cell paddings and alignments globally for dynamic rows */
+  table {
+    @apply w-full text-left border-collapse;
+  }
+
+  th,
+  td {
+    @apply p-2;
+  }
+}
+
+.recharts-responsive-container {
+  min-height: 280px !important;
+}
+
+/* ===== FULL DARK MODE ===== */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+
+/* Main layout containers */
+html.dark .bg-kasir-gray,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100 {
+  background-color: #0f172a !important;
+}
+
+/* Cards, panels, modals */
+html.dark .bg-white {
+  background-color: #1e293b !important;
+}
+
+/* Dropdown menu stays readable */
+html.dark .user-dropdown-container .bg-white {
+  background-color: #1e293b !important;
+}
+
+/* Table headers */
+html.dark .bg-\[#d1d5db\],
+html.dark table thead tr {
+  background-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Table rows */
+html.dark table tbody tr {
+  border-color: #334155 !important;
+}
+
+html.dark table tbody tr:hover {
+  background-color: #283548 !important;
+}
+
+/* Category group rows */
+html.dark .bg-gray-200,
+html.dark .bg-gray-100 {
+  background-color: #283548 !important;
+}
+
+/* Text colors */
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .text-gray-600,
+html.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* Borders */
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+  border-color: #334155 !important;
+}
+
+/* Form inputs */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  border-color: #475569 !important;
+}
+
+/* Shadows */
+html.dark .shadow-sm,
+html.dark .shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Footer */
+html.dark footer {
+  background-color: #0f172a !important;
+  color: #64748b !important;
+}
+
+/* Topbar title */
+html.dark h1.text-lg {
+  color: #fff !important;
+}
+
+/* Pagination buttons */
+html.dark .border.rounded {
+  border-color: #475569 !important;
+  color: #94a3b8 !important;
+}
+
+/* Hover states */
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #283548 !important;
+}
+
+/* Search input container */
+html.dark .rounded-full {
+  border-color: #475569 !important;
+  background-color: #1e293b !important;
+}
+
+/* File input */
+html.dark input[type="file"] {
+  color: #94a3b8 !important;
+}
+
+/* Scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}

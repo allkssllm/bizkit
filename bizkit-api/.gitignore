@@ -1,0 +1,6 @@
+# Mengabaikan file environment
+.env
+
+# Mengabaikan folder build golang (opsional tapi disarankan)
+/main
+*.exe
