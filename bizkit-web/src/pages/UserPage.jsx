@@ -13,7 +13,7 @@ const UserPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8081/api/users', {
+            const response = await axios.get('http://bizkit-api.onrender.com/api/users', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUsers(response.data.data || []);
@@ -30,7 +30,7 @@ const UserPage = () => {
         if (!deleteTarget) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8081/api/users/${deleteTarget}`, {
+            await axios.delete(`http://bizkit-api.onrender.com/api/users/${deleteTarget}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchUsers();

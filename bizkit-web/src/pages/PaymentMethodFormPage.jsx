@@ -22,12 +22,12 @@ const PaymentMethodFormPage = () => {
         const token = localStorage.getItem('token');
 
         // Fetch outlets
-        axios.get('http://localhost:8081/api/outlets', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get('http://bizkit-api.onrender.com/api/outlets', { headers: { Authorization: `Bearer ${token}` } })
             .then(res => setOutlets(res.data.data || []))
             .catch(() => { });
 
         if (isEdit) {
-            axios.get('http://localhost:8081/api/master/payment-methods', { headers: { Authorization: `Bearer ${token}` } })
+            axios.get('http://bizkit-api.onrender.com/api/master/payment-methods', { headers: { Authorization: `Bearer ${token}` } })
                 .then(res => {
                     const methods = res.data.data || [];
                     const method = methods.find(m => String(m.id) === String(id));
@@ -66,11 +66,11 @@ const PaymentMethodFormPage = () => {
             };
 
             if (isEdit) {
-                await axios.put(`http://localhost:8081/api/master/payment-methods/${id}`, payload, {
+                await axios.put(`http://bizkit-api.onrender.com/api/master/payment-methods/${id}`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post('http://localhost:8081/api/master/payment-methods', payload, {
+                await axios.post('http://bizkit-api.onrender.com/api/master/payment-methods', payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }

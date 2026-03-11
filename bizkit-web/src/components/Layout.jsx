@@ -129,7 +129,7 @@ const Layout = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            axios.get('http://localhost:8081/api/settings', { headers: { Authorization: `Bearer ${token}` } })
+            axios.get('http://bizkit-api.onrender.com/api/settings', { headers: { Authorization: `Bearer ${token}` } })
                 .then(res => {
                     if (res.data.data?.logo) setOutletLogo(res.data.data.logo);
                 })
@@ -193,7 +193,7 @@ const Layout = () => {
                 {/* Logo Area */}
                 <div className="flex items-center justify-center h-16 border-b border-kasir-green px-4">
                     {outletLogo ? (
-                        <img src={`http://localhost:8081${outletLogo}`} alt="Logo" className="h-10 max-w-[140px] object-contain" />
+                        <img src={`http://bizkit-api.onrender.com${outletLogo}`} alt="Logo" className="h-10 max-w-[140px] object-contain" />
                     ) : (
                         <span className="text-xl font-bold text-white italic tracking-wider flex items-center">
                             <span className="bg-white text-bizkit-green px-1 py-0.5 rounded-sm mr-2 not-italic text-sm">BizKit</span>

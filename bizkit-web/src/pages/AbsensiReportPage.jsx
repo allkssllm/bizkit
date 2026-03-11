@@ -24,7 +24,7 @@ const AbsensiReportPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8081/api/attendances', {
+            const response = await axios.get('http://bizkit-api.onrender.com/api/attendances', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { date: currentDate }
             });

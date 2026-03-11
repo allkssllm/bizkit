@@ -25,7 +25,7 @@ const RiwayatReportPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8081/api/reports/history', {
+            const response = await axios.get('http://bizkit-api.onrender.com/api/reports/history', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     start_date: startDate,
