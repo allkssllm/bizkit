@@ -9,7 +9,7 @@ const PengaturanUmumPage = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        axios.get('http://bizkit-api.onrender.com/api/settings', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get('https://bizkit-api.onrender.com/api/settings', { headers: { Authorization: `Bearer ${token}` } })
             .then(res => {
                 const data = res.data.data;
                 if (data?.logo) {
@@ -40,7 +40,7 @@ const PengaturanUmumPage = () => {
             const formData = new FormData();
             formData.append('logo', logoFile);
 
-            const response = await axios.post('http://bizkit-api.onrender.com/api/settings', formData, {
+            const response = await axios.post('https://bizkit-api.onrender.com/api/settings', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -75,7 +75,7 @@ const PengaturanUmumPage = () => {
                             />
                             {currentLogo && (
                                 <img
-                                    src={`http://bizkit-api.onrender.com${currentLogo}`}
+                                    src={`https://bizkit-api.onrender.com${currentLogo}`}
                                     alt="Current Logo"
                                     className="w-16 h-16 object-contain border border-gray-200 rounded p-1"
                                 />

@@ -76,7 +76,7 @@ const HakAksesFormPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://bizkit-api.onrender.com/api/roles`, {
+            const response = await axios.get(`https://bizkit-api.onrender.com/api/roles`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // We fetch all roles and find the match since there is no GET /roles/:id yet
@@ -137,11 +137,11 @@ const HakAksesFormPage = () => {
             };
 
             if (isEdit) {
-                await axios.put(`http://bizkit-api.onrender.com/api/roles/${id}`, payload, {
+                await axios.put(`https://bizkit-api.onrender.com/api/roles/${id}`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post(`http://bizkit-api.onrender.com/api/roles`, payload, {
+                await axios.post(`https://bizkit-api.onrender.com/api/roles`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }

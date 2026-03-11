@@ -15,7 +15,7 @@ const ShiftReportPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://bizkit-api.onrender.com/api/shifts', {
+            const response = await axios.get('https://bizkit-api.onrender.com/api/shifts', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { start_date: startDate, end_date: endDate }
             });

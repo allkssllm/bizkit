@@ -15,7 +15,7 @@ const PaymentMethodPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://bizkit-api.onrender.com/api/master/payment-methods', {
+            const response = await axios.get('https://bizkit-api.onrender.com/api/master/payment-methods', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMethods(response.data.data || []);
@@ -32,7 +32,7 @@ const PaymentMethodPage = () => {
         if (!deleteTarget) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://bizkit-api.onrender.com/api/master/payment-methods/${deleteTarget}`, {
+            await axios.delete(`https://bizkit-api.onrender.com/api/master/payment-methods/${deleteTarget}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchMethods();

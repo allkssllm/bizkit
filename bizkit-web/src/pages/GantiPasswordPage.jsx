@@ -44,7 +44,7 @@ const GantiPasswordPage = () => {
         try {
             const token = localStorage.getItem('token');
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            await axios.put(`http://bizkit-api.onrender.com/api/users/${user.id}/password`, {
+            await axios.put(`https://bizkit-api.onrender.com/api/users/${user.id}/password`, {
                 current_password: form.current_password,
                 new_password: form.new_password,
             }, {

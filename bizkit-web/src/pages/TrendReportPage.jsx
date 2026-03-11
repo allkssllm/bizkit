@@ -27,7 +27,7 @@ const TrendReportPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const endpoint = tab === 'product' ? '/api/master/products' : '/api/master/categories';
-                const response = await axios.get(`http://bizkit-api.onrender.com${endpoint}`, {
+                const response = await axios.get(`https://bizkit-api.onrender.com${endpoint}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setItemsList(response.data.data || []);
@@ -50,7 +50,7 @@ const TrendReportPage = () => {
             setLoading(true);
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://bizkit-api.onrender.com/api/reports/trend', {
+                const response = await axios.get('https://bizkit-api.onrender.com/api/reports/trend', {
                     headers: { Authorization: `Bearer ${token}` },
                     params: {
                         type: tab,

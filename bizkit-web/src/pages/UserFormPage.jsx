@@ -24,16 +24,16 @@ const UserFormPage = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         // Fetch roles
-        axios.get('http://bizkit-api.onrender.com/api/roles', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get('https://bizkit-api.onrender.com/api/roles', { headers: { Authorization: `Bearer ${token}` } })
             .then(res => setRoles(res.data.data || []))
             .catch(() => { });
         // Fetch outlets
-        axios.get('http://bizkit-api.onrender.com/api/outlets', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get('https://bizkit-api.onrender.com/api/outlets', { headers: { Authorization: `Bearer ${token}` } })
             .then(res => setOutlets(res.data.data || []))
             .catch(() => { });
         // If edit, fetch user
         if (isEdit) {
-            axios.get('http://bizkit-api.onrender.com/api/users', { headers: { Authorization: `Bearer ${token}` } })
+            axios.get('https://bizkit-api.onrender.com/api/users', { headers: { Authorization: `Bearer ${token}` } })
                 .then(res => {
                     const users = res.data.data || [];
                     const user = users.find(u => String(u.id) === String(id));
@@ -75,7 +75,7 @@ const UserFormPage = () => {
             }
 
             if (isEdit) {
-                await axios.put(`http://bizkit-api.onrender.com/api/users/${id}`, payload, {
+                await axios.put(`https://bizkit-api.onrender.com/api/users/${id}`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setModal({
@@ -99,7 +99,7 @@ const UserFormPage = () => {
                     return;
                 }
                 payload.password = form.password;
-                await axios.post('http://bizkit-api.onrender.com/api/users', payload, {
+                await axios.post('https://bizkit-api.onrender.com/api/users', payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setModal({

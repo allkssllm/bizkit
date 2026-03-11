@@ -13,7 +13,7 @@ const HakAksesPage = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://bizkit-api.onrender.com/api/roles', {
+            const response = await axios.get('https://bizkit-api.onrender.com/api/roles', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRoles(response.data.data || []);
@@ -30,7 +30,7 @@ const HakAksesPage = () => {
         if (!deleteTarget) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://bizkit-api.onrender.com/api/roles/${deleteTarget}`, {
+            await axios.delete(`https://bizkit-api.onrender.com/api/roles/${deleteTarget}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchRoles();
