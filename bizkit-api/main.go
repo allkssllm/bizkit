@@ -33,6 +33,7 @@ func main() {
 		AllowOriginFunc: func(origin string) bool {
 			return true
 		},
+		AllowOrigins: []string{"https://bizkit-api.onrender.com"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},
