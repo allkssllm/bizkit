@@ -357,8 +357,8 @@ const MainTable = ({ period, orders, summary }) => {
     const columns = period === 'daily' ? dailyColumns : otherColumns;
 
     return (
-        <div className="bg-white shadow-sm border border-gray-200 rounded mb-6 overflow-hidden shrink-0">
-            <table className="w-full text-sm text-left">
+        <div className="bg-white shadow-sm border border-gray-200 rounded mb-6 overflow-x-auto shrink-0">
+            <table className="w-full text-sm text-left min-w-[700px]">
                 <thead className="bg-[#d1d5db] text-gray-800 text-xs font-bold border-b border-gray-400">
                     <tr>
                         {columns.map((col, i) => (
@@ -458,11 +458,11 @@ const StatRow = ({ label, value }) => (
 );
 
 const PaymentMethodsTable = ({ methods }) => (
-    <div className="bg-white shadow-sm border border-gray-200 mb-6 overflow-hidden rounded shrink-0">
-        <div className="bg-[#d1d5db] text-gray-800 px-4 py-2 text-center text-xs font-bold border-b border-gray-400">
+    <div className="bg-white shadow-sm border border-gray-200 mb-6 overflow-x-auto rounded shrink-0">
+        <div className="bg-[#d1d5db] text-gray-800 px-4 py-2 text-center text-xs font-bold border-b border-gray-400 min-w-[300px]">
             Metode Pembayaran
         </div>
-        <table className="w-full text-sm text-left">
+        <table className="w-full text-sm text-left min-w-[300px]">
             <tbody>
                 {methods.length === 0 ? (
                     <tr className="bg-white border-b border-gray-200">
@@ -494,8 +494,8 @@ const StatTable = ({ title, columnLabel, items, statBy }) => {
     return (
         <div className="mb-6">
             <h3 className="text-gray-600 text-sm mb-1">{title}</h3>
-            <div className="bg-white shadow-sm border border-gray-200 overflow-hidden rounded">
-                <table className="w-full text-sm text-left">
+        <div className="bg-white shadow-sm border border-gray-200 overflow-x-auto rounded">
+            <table className="w-full text-sm text-left min-w-[500px]">
                     <thead className="bg-[#d1d5db] text-gray-800 text-xs font-bold border-b border-gray-400">
                         <tr>
                             <th className="px-4 py-2 w-16 border-r border-gray-400">No</th>

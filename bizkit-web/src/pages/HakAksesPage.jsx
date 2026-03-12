@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 const HakAksesPage = () => {
     const navigate = useNavigate();
@@ -12,10 +12,7 @@ const HakAksesPage = () => {
     const fetchRoles = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://bizkit-api.onrender.com/api/roles', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/roles');
             setRoles(response.data.data || []);
         } catch (err) {
             console.error("Failed to fetch roles", err);
@@ -29,10 +26,7 @@ const HakAksesPage = () => {
     const confirmDelete = async () => {
         if (!deleteTarget) return;
         try {
-            const token = localStorage.getItem('token');
-            await axios.delete(`https://bizkit-api.onrender.com/api/roles/${deleteTarget}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/roles/${deleteTarget}`);
             fetchRoles();
         } catch (err) {
             console.error("Failed to delete role", err);
@@ -50,20 +44,22 @@ const HakAksesPage = () => {
             <div className="bg-white rounded shadow-sm border border-gray-100 p-6 min-h-[500px]">
 
                 {/* Search */}
-                <div className="flex justify-end mb-4">
-                    <div className="flex items-center text-sm font-medium text-gray-700 mr-2">Search:</div>
-                    <div className="flex items-center border border-gray-300 rounded px-3 py-1 bg-white">
+                <div className="flex flex-col sm:flex-row sm:justify-end items-center mb-6 space-y-2 sm:space-y-0">
+                    <div className="text-sm font-medium text-gray-700 mr-2">Search:</div>
+                    <div className="flex items-center border border-gray-300 rounded px-3 py-1.5 bg-white w-full sm:w-64">
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="outline-none text-sm w-48 bg-transparent"
+                            className="outline-none text-sm w-full bg-transparent"
+                            placeholder="Cari role..."
                         />
                     </div>
                 </div>
 
                 {/* Table */}
-                <table className="w-full text-sm text-left">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[600px]">
                     <thead>
                         <tr className="bg-[#f9fafb] text-gray-600 font-bold border-y border-gray-200">
                             <th className="px-4 py-3 w-16 text-center border-r border-gray-200">
@@ -129,6 +125,7 @@ const HakAksesPage = () => {
                         )}
                     </tbody>
                 </table>
+                </div>
                 <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
                     <div>Showing 1 to {filteredRoles.length} of {filteredRoles.length} entries</div>
                     <div className="flex space-x-1">

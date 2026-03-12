@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import Modal from '../components/Modal';
 
 const PaymentMethodFormPage = () => {
@@ -19,15 +19,13 @@ const PaymentMethodFormPage = () => {
     const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'info', onConfirm: null });
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-
         // Fetch outlets
-        axios.get('https://bizkit-api.onrender.com/api/outlets', { headers: { Authorization: `Bearer ${token}` } })
+        api.get('/outlets')
             .then(res => setOutlets(res.data.data || []))
             .catch(() => { });
 
         if (isEdit) {
-            axios.get('https://bizkit-api.onrender.com/api/master/payment-methods', { headers: { Authorization: `Bearer ${token}` } })
+            api.get('/master/payment-methods')
                 .then(res => {
                     const methods = res.data.data || [];
                     const method = methods.find(m => String(m.id) === String(id));
@@ -57,22 +55,10 @@ const PaymentMethodFormPage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const payload = {
-                name: form.name,
-                show_in_purchase: form.show_in_purchase,
-                show_in_sales: form.show_in_sales,
-                outlet_id: parseInt(form.outlet_id) || 0,
-            };
-
             if (isEdit) {
-                await axios.put(`https://bizkit-api.onrender.com/api/master/payment-methods/${id}`, payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/master/payment-methods/${id}`, payload);
             } else {
-                await axios.post('https://bizkit-api.onrender.com/api/master/payment-methods', payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post('/master/payment-methods', payload);
             }
 
             setModal({

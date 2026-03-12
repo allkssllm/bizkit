@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 function formatRupiah(number) {
     return new Intl.NumberFormat('id-ID').format(number);
@@ -14,9 +14,7 @@ const ShiftReportPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://bizkit-api.onrender.com/api/shifts', {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await api.get('/shifts', {
                 params: { start_date: startDate, end_date: endDate }
             });
             setData(response.data.data || []);
@@ -55,7 +53,7 @@ const ShiftReportPage = () => {
             <div className="bg-white rounded shadow-sm border border-gray-100 p-6 flex flex-col min-h-[500px]">
 
                 {/* Top Controls - Period Filter */}
-                <div className="flex items-center space-x-3 mb-6">
+                <div className="flex flex-wrap items-center gap-3 mb-6">
                     <div className="flex items-center px-4 py-2 border border-gray-300 rounded text-sm text-gray-600 bg-gray-50 flex-shrink-0">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span className="font-bold">Periode</span>
@@ -64,25 +62,25 @@ const ShiftReportPage = () => {
                         type="date"
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-32"
+                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-full sm:w-32"
                     />
                     <input
                         type="date"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
-                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-32"
+                        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-full sm:w-32"
                     />
                     <button
                         onClick={handleApply}
-                        className="bg-[#4b5563] hover:bg-[#374151] text-white px-6 py-2 rounded text-sm font-semibold whitespace-nowrap"
+                        className="bg-[#4b5563] hover:bg-[#374151] text-white px-6 py-2 rounded text-sm font-semibold whitespace-nowrap w-full sm:w-auto"
                     >
                         Ganti
                     </button>
                 </div>
 
                 {/* Table */}
-                <div className="flex-1">
-                    <table className="w-full text-sm text-left">
+                <div className="flex-1 overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
                         <thead>
                             <tr className="bg-[#2d6b4a] text-white text-xs font-bold">
                                 <th className="px-3 py-2.5">Waktu</th>

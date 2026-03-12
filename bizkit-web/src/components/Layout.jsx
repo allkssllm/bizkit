@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     HomeIcon,
@@ -80,7 +80,7 @@ const SidebarGroupTitle = ({ title }) => (
 
 
 const Layout = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [outletLogo, setOutletLogo] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
@@ -99,8 +99,6 @@ const Layout = () => {
     }
 
     const hasPermission = (permissionId) => {
-        // Owner/Superuser might bypass if needed, but for now we strictly check permissions object
-        // If the role has full access check 'all' flag if we use it, otherwise check specific ID
         if (userPermissions.all) return true;
         return !!userPermissions[permissionId];
     };
@@ -127,14 +125,11 @@ const Layout = () => {
     }, [isDarkMode]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.get('https://bizkit-api.onrender.com/api/settings', { headers: { Authorization: `Bearer ${token}` } })
-                .then(res => {
-                    if (res.data.data?.logo) setOutletLogo(res.data.data.logo);
-                })
-                .catch(() => { });
-        }
+        api.get('/settings')
+            .then(res => {
+                if (res.data.data?.logo) setOutletLogo(res.data.data.logo);
+            })
+            .catch(() => { });
     }, [location.pathname]);
 
     // Mapping path routes to page titles to show dynamically in the topbar
@@ -181,8 +176,11 @@ const Layout = () => {
     return (
         <div className="flex h-screen bg-kasir-gray font-sans overflow-hidden">
             {/* Mobile sidebar overlay */}
-            {!isSidebarOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden" onClick={() => setIsSidebarOpen(true)} />
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity duration-300 ease-in-out" 
+                    onClick={() => setIsSidebarOpen(false)} 
+                />
             )}
 
             {/* Sidebar */}
@@ -193,7 +191,7 @@ const Layout = () => {
                 {/* Logo Area */}
                 <div className="flex items-center justify-center h-16 border-b border-kasir-green px-4">
                     {outletLogo ? (
-                        <img src={`https://bizkit-api.onrender.com${outletLogo}`} alt="Logo" className="h-10 max-w-[140px] object-contain" />
+                        <img src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${outletLogo}`} alt="Logo" className="h-10 max-w-[140px] object-contain" />
                     ) : (
                         <span className="text-xl font-bold text-white italic tracking-wider flex items-center">
                             <span className="bg-white text-bizkit-green px-1 py-0.5 rounded-sm mr-2 not-italic text-sm">BizKit</span>

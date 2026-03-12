@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
@@ -24,9 +24,7 @@ const RiwayatReportPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://bizkit-api.onrender.com/api/reports/history', {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await api.get('/reports/history', {
                 params: {
                     start_date: startDate,
                     end_date: endDate,
@@ -152,11 +150,11 @@ const RiwayatReportPage = () => {
             <div className="bg-white rounded shadow-sm border border-gray-100 p-6 flex flex-col min-h-[500px]">
 
                 {/* Top Controls */}
-                <div className="flex justify-between items-start mb-4">
-                    <div className="flex flex-col space-y-3 w-1/2">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start space-y-4 lg:space-y-0 mb-6">
+                    <div className="flex flex-col space-y-4 w-full lg:w-2/3">
                         {/* Date Filter Row */}
-                        <div className="flex items-center space-x-2">
-                            <div className="flex items-center px-4 py-2 border border-gray-300 rounded text-sm text-gray-600 bg-gray-50 flex-shrink-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex items-center px-4 py-2 border border-gray-300 rounded text-sm text-gray-600 bg-gray-50">
                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                 <span className="font-bold">Periode</span>
                             </div>
@@ -164,17 +162,17 @@ const RiwayatReportPage = () => {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-32 flex-shrink-0"
+                                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-full sm:w-32"
                             />
                             <input
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-32 flex-shrink-0"
+                                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500 w-full sm:w-32"
                             />
                             <button
                                 onClick={handleApply}
-                                className="bg-[#4b5563] hover:bg-[#374151] text-white px-6 py-2 rounded text-sm font-semibold whitespace-nowrap"
+                                className="bg-[#4b5563] hover:bg-[#374151] text-white px-6 py-2 rounded text-sm font-semibold whitespace-nowrap w-full sm:w-auto"
                             >
                                 Ganti
                             </button>
@@ -193,7 +191,7 @@ const RiwayatReportPage = () => {
                     </div>
 
                     {/* Export Buttons */}
-                    <div className="flex space-x-2 items-center mt-1">
+                    <div className="flex space-x-2 items-center justify-end w-full lg:w-auto">
                         <button onClick={handleExportPDF} title="Download PDF" className="hover:opacity-80 transition-opacity flex flex-col items-center">
                             <svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="24" height="28" rx="2" fill="#dc2626" />
@@ -214,8 +212,8 @@ const RiwayatReportPage = () => {
                 </div>
 
                 {/* Table */}
-                <div className="flex-1 mt-4">
-                    <table className="w-full text-sm text-left border-t border-b border-gray-200">
+                <div className="flex-1 mt-4 overflow-x-auto">
+                    <table className="w-full text-sm text-left border-t border-b border-gray-200 min-w-[700px]">
                         <thead className="text-gray-800 font-bold border-b border-gray-200">
                             <tr>
                                 <th className="px-4 py-3 w-16">

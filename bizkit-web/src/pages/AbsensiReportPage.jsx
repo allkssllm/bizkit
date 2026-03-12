@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const HARI = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -23,9 +23,7 @@ const AbsensiReportPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://bizkit-api.onrender.com/api/attendances', {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await api.get('/attendances', {
                 params: { date: currentDate }
             });
             setData(response.data.data || []);
@@ -86,7 +84,7 @@ const AbsensiReportPage = () => {
                                     {/* Photo */}
                                     <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center overflow-hidden mr-4">
                                         {item.photo ? (
-                                            <img src={item.photo} alt="foto" className="w-full h-full object-cover" />
+                                            <img src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${item.photo}`} alt="foto" className="w-full h-full object-cover" />
                                         ) : (
                                             <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
                                         )}

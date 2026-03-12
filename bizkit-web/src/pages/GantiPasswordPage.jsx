@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 const GantiPasswordPage = () => {
     const navigate = useNavigate();
@@ -42,13 +42,10 @@ const GantiPasswordPage = () => {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            await axios.put(`https://bizkit-api.onrender.com/api/users/${user.id}/password`, {
+            await api.put(`/users/${user.id}/password`, {
                 current_password: form.current_password,
                 new_password: form.new_password,
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
 
             setMessage('Password berhasil diubah!');

@@ -68,8 +68,8 @@ const PriceCategories = () => {
                 </div>
 
                 {/* Table */}
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <table className="min-w-full divide-y border-collapse">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="min-w-full divide-y border-collapse min-w-[600px]">
                         <thead className="bg-[#cbd5e1] text-[#334155]">
                             <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-bold tracking-wider w-24">

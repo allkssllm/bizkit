@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -25,11 +25,8 @@ const TrendReportPage = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const endpoint = tab === 'product' ? '/api/master/products' : '/api/master/categories';
-                const response = await axios.get(`https://bizkit-api.onrender.com${endpoint}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const endpoint = tab === 'product' ? '/master/products' : '/master/categories';
+                const response = await api.get(endpoint);
                 setItemsList(response.data.data || []);
                 setSelectedItem(''); // reset selection
                 setData(null); // clear old data
@@ -49,9 +46,7 @@ const TrendReportPage = () => {
             }
             setLoading(true);
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('https://bizkit-api.onrender.com/api/reports/trend', {
-                    headers: { Authorization: `Bearer ${token}` },
+                const response = await api.get('/reports/trend', {
                     params: {
                         type: tab,
                         item_id: selectedItem,
@@ -164,8 +159,8 @@ const TrendReportPage = () => {
             </div>
 
             {/* Selector & Export */}
-            <div className="flex justify-between items-end mb-6">
-                <div className="w-1/3">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-end space-y-4 md:space-y-0 mb-6">
+                <div className="w-full md:w-1/3">
                     <label className="block text-xs font-bold text-gray-700 mb-2">
                         Pilih {tab === 'product' ? 'Produk' : 'Kategori'}:
                     </label>
@@ -187,7 +182,7 @@ const TrendReportPage = () => {
                 </div>
 
                 {selectedItem && (
-                    <div className="flex space-x-2 items-center mr-2">
+                    <div className="flex space-x-2 items-center justify-end">
                         <button onClick={handleExportPDF} title="Download PDF" className="hover:opacity-80 transition-opacity flex flex-col items-center">
                             <svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="24" height="28" rx="2" fill="#dc2626" />
@@ -327,10 +322,9 @@ const TrendReportPage = () => {
                         </>
                     )}
 
-                    {/* Detail Table */}
-                    <div className="mb-6">
+                    <div className="mb-6 overflow-x-auto">
                         <h3 className="text-gray-600 text-sm mb-1">Detail</h3>
-                        <div className="bg-white shadow-sm border border-gray-200 rounded mb-6 overflow-hidden shrink-0">
+                        <div className="bg-white shadow-sm border border-gray-200 rounded mb-6 min-w-[600px] shrink-0">
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-[#d1d5db] text-gray-800 text-xs font-bold border-b border-gray-400">
                                     <tr>

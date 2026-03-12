@@ -13,6 +13,8 @@ const ProductFormPage = () => {
     const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
     const [isDescriptionChecked, setIsDescriptionChecked] = useState(false);
     const [isHargaTambahanChecked, setIsHargaTambahanChecked] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -88,6 +90,9 @@ const ProductFormPage = () => {
                 if (product.description) {
                     setIsDescriptionChecked(true);
                 }
+                if (product.image) {
+                    setImagePreview(`${import.meta.env.VITE_API_URL.replace('/api', '')}${product.image}`);
+                }
             }
         } catch (error) {
             console.error('Failed to fetch product:', error);
@@ -103,6 +108,18 @@ const ProductFormPage = () => {
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleVariantToggle = (variantId) => {
@@ -131,25 +148,36 @@ const ProductFormPage = () => {
 
         setLoading(true);
         try {
-            const payload = {
-                image: formData.image,
-                sku: formData.sku,
-                name: formData.name,
-                description: isDescriptionChecked ? formData.description : '',
-                category_id: parseInt(formData.category_id),
-                brand_id: parseInt(formData.brand_id),
-                unit_id: parseInt(formData.unit_id),
-                price: parseFloat(formData.price),
-                status: 'Active',
-                has_variant: formData.has_variant,
-                is_favorite: formData.is_favorite,
-                variant_ids: formData.has_variant ? formData.variant_ids.map(Number) : []
-            };
+            const formDataPayload = new FormData();
+            formDataPayload.append('name', formData.name);
+            formDataPayload.append('sku', formData.sku);
+            formDataPayload.append('description', isDescriptionChecked ? formData.description : '');
+            formDataPayload.append('category_id', formData.category_id);
+            formDataPayload.append('brand_id', formData.brand_id);
+            formDataPayload.append('unit_id', formData.unit_id);
+            formDataPayload.append('price', formData.price);
+            formDataPayload.append('status', 'Active');
+            formDataPayload.append('has_variant', formData.has_variant);
+            formDataPayload.append('is_favorite', formData.is_favorite);
+            
+            if (selectedImage) {
+                formDataPayload.append('image', selectedImage);
+            }
+
+            if (formData.has_variant) {
+                formData.variant_ids.forEach(id => {
+                    formDataPayload.append('variant_ids', id);
+                });
+            }
 
             if (isEdit) {
-                await api.put(`/master/products/${id}`, payload);
+                await api.put(`/master/products/${id}`, formDataPayload, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                await api.post('/master/products', payload);
+                await api.post('/master/products', formDataPayload, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
             navigate('/products');
         } catch (error) {
@@ -171,13 +199,24 @@ const ProductFormPage = () => {
                     <div className="p-8 flex-1">
                         <form id="product-form" onSubmit={handleSubmit} className="space-y-6 max-w-full">
 
-                            {/* Upload Image (Mock) */}
+                            {/* Upload Image */}
                             <div>
                                 <label className="block text-sm font-bold text-gray-900 mb-2">Upload Gambar Produk</label>
-                                <input
-                                    type="file"
-                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                                />
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
+                                        {imagePreview ? (
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="text-gray-400 text-xs text-center p-2">No Image</div>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                                    />
+                                </div>
                             </div>
 
                             {/* SKU */}

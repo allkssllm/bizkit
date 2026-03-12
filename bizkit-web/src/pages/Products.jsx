@@ -86,8 +86,8 @@ const Products = () => {
                 </div>
 
                 {/* Table */}
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <table className="min-w-full divide-y border-collapse">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="min-w-full divide-y border-collapse min-w-[800px]">
                         <thead className="bg-[#cbd5e1] text-[#334155]">
                             <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-bold tracking-wider w-24">
@@ -141,7 +141,18 @@ const Products = () => {
                                             return (
                                                 <tr key={prod.id} className="hover:bg-gray-50">
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{currentIndex}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{prod.name}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <div className="flex items-center">
+                                                            <div className="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden mr-3">
+                                                                {prod.image ? (
+                                                                    <img src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${prod.image}`} alt={prod.name} className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">No Image</div>
+                                                                )}
+                                                            </div>
+                                                            <span>{prod.name}</span>
+                                                        </div>
+                                                    </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{prod.category ? prod.category.name : '-'}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{formatRupiah(prod.price)}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium border-l border-gray-200">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import api from './utils/api'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Categories from './pages/Categories'
@@ -30,7 +30,7 @@ function Login() {
     setError('')
 
     try {
-      const response = await axios.post(import.meta.env.VITE_API_URL + '/auth/login', {
+      const response = await api.post('/auth/login', {
         username,
         password
       })
@@ -47,7 +47,7 @@ function Login() {
     }
   }
   useEffect(() => {
-    axios.get('https://bizkit-api.onrender.com/api/ping').catch(() => {})
+    api.get('/ping').catch(() => {})
   }, [])
 
   return (

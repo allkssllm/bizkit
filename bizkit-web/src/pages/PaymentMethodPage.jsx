@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 const PaymentMethodPage = () => {
     const navigate = useNavigate();
@@ -14,10 +14,7 @@ const PaymentMethodPage = () => {
     const fetchMethods = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://bizkit-api.onrender.com/api/master/payment-methods', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/master/payment-methods');
             setMethods(response.data.data || []);
         } catch (err) {
             console.error("Failed to fetch payment methods", err);
@@ -31,10 +28,7 @@ const PaymentMethodPage = () => {
     const confirmDelete = async () => {
         if (!deleteTarget) return;
         try {
-            const token = localStorage.getItem('token');
-            await axios.delete(`https://bizkit-api.onrender.com/api/master/payment-methods/${deleteTarget}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/master/payment-methods/${deleteTarget}`);
             fetchMethods();
         } catch (err) {
             console.error("Failed to delete payment method", err);
@@ -56,21 +50,22 @@ const PaymentMethodPage = () => {
             <div className="bg-white rounded shadow-sm border border-gray-100 p-6 min-h-[500px]">
 
                 {/* Search - oval/pill style */}
-                <div className="flex justify-end mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-full px-4 py-1.5 bg-white">
+                <div className="flex flex-col sm:flex-row sm:justify-end items-center mb-6 space-y-2 sm:space-y-0">
+                    <div className="flex items-center border border-gray-300 rounded-full px-4 py-2 bg-white w-full sm:w-64">
                         <svg className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                             placeholder="Cari..."
-                            className="outline-none text-sm w-40 bg-transparent"
+                            className="outline-none text-sm w-full bg-transparent"
                         />
                     </div>
                 </div>
 
                 {/* Table */}
-                <table className="w-full text-sm text-left">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[600px]">
                     <thead>
                         <tr className="bg-[#d1d5db] text-gray-800 font-bold text-xs">
                             <th className="px-4 py-2.5 w-16">
@@ -125,6 +120,7 @@ const PaymentMethodPage = () => {
                         )}
                     </tbody>
                 </table>
+                </div>
 
                 {/* Pagination */}
                 {totalPages > 1 && (

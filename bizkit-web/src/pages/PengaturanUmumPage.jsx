@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const PengaturanUmumPage = () => {
     const [logoFile, setLogoFile] = useState(null);
@@ -8,8 +8,7 @@ const PengaturanUmumPage = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        axios.get('https://bizkit-api.onrender.com/api/settings', { headers: { Authorization: `Bearer ${token}` } })
+        api.get('/settings')
             .then(res => {
                 const data = res.data.data;
                 if (data?.logo) {
@@ -36,13 +35,11 @@ const PengaturanUmumPage = () => {
         setLoading(true);
         setMessage('');
         try {
-            const token = localStorage.getItem('token');
             const formData = new FormData();
             formData.append('logo', logoFile);
-
-            const response = await axios.post('https://bizkit-api.onrender.com/api/settings', formData, {
+            
+            const response = await api.post('/settings', formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
@@ -75,7 +72,7 @@ const PengaturanUmumPage = () => {
                             />
                             {currentLogo && (
                                 <img
-                                    src={`https://bizkit-api.onrender.com${currentLogo}`}
+                                    src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${currentLogo}`}
                                     alt="Current Logo"
                                     className="w-16 h-16 object-contain border border-gray-200 rounded p-1"
                                 />

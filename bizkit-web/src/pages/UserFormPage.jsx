@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import Modal from '../components/Modal';
 
 const UserFormPage = () => {
@@ -22,18 +22,15 @@ const UserFormPage = () => {
     const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'info', onConfirm: null });
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        // Fetch roles
-        axios.get('https://bizkit-api.onrender.com/api/roles', { headers: { Authorization: `Bearer ${token}` } })
+        api.get('/roles')
             .then(res => setRoles(res.data.data || []))
             .catch(() => { });
         // Fetch outlets
-        axios.get('https://bizkit-api.onrender.com/api/outlets', { headers: { Authorization: `Bearer ${token}` } })
+        api.get('/outlets')
             .then(res => setOutlets(res.data.data || []))
             .catch(() => { });
-        // If edit, fetch user
         if (isEdit) {
-            axios.get('https://bizkit-api.onrender.com/api/users', { headers: { Authorization: `Bearer ${token}` } })
+            api.get('/users')
                 .then(res => {
                     const users = res.data.data || [];
                     const user = users.find(u => String(u.id) === String(id));
@@ -75,9 +72,7 @@ const UserFormPage = () => {
             }
 
             if (isEdit) {
-                await axios.put(`https://bizkit-api.onrender.com/api/users/${id}`, payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/users/${id}`, payload);
                 setModal({
                     isOpen: true,
                     title: 'Berhasil',
@@ -99,9 +94,7 @@ const UserFormPage = () => {
                     return;
                 }
                 payload.password = form.password;
-                await axios.post('https://bizkit-api.onrender.com/api/users', payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post('/users', payload);
                 setModal({
                     isOpen: true,
                     title: 'Berhasil',
@@ -128,8 +121,9 @@ const UserFormPage = () => {
 
     return (
         <div className="p-6">
-            <div className="bg-white rounded shadow-sm border border-gray-100 p-8 max-w-3xl mx-auto">
-                <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="bg-white rounded shadow-sm border border-gray-100 p-8 max-w-4xl mx-auto">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {/* Nama Lengkap Pengguna */}
                     <div>
@@ -199,6 +193,8 @@ const UserFormPage = () => {
                                 <option key={r.id} value={r.id}>{r.name}</option>
                             ))}
                         </select>
+                    </div>
+
                     </div>
 
                     {/* Pilih Outlet */}

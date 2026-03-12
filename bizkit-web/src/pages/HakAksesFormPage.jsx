@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import Modal from '../components/Modal';
 
 const PERMISSION_MODULES = [
@@ -75,10 +75,7 @@ const HakAksesFormPage = () => {
     const fetchRole = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`https://bizkit-api.onrender.com/api/roles`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/roles');
             // We fetch all roles and find the match since there is no GET /roles/:id yet
             const role = response.data.data.find(r => r.id.toString() === id);
             if (role) {
@@ -130,20 +127,10 @@ const HakAksesFormPage = () => {
         setSubmitting(true);
 
         try {
-            const token = localStorage.getItem('token');
-            const payload = {
-                name,
-                permissions: JSON.stringify(permissions)
-            };
-
             if (isEdit) {
-                await axios.put(`https://bizkit-api.onrender.com/api/roles/${id}`, payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/roles/${id}`, payload);
             } else {
-                await axios.post(`https://bizkit-api.onrender.com/api/roles`, payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post('/roles', payload);
             }
             setModal({
                 isOpen: true,

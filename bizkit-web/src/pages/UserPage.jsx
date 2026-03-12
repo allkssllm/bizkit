@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 const UserPage = () => {
     const navigate = useNavigate();
@@ -12,10 +12,7 @@ const UserPage = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://bizkit-api.onrender.com/api/users', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/users');
             setUsers(response.data.data || []);
         } catch (err) {
             console.error("Failed to fetch users", err);
@@ -29,10 +26,7 @@ const UserPage = () => {
     const confirmDelete = async () => {
         if (!deleteTarget) return;
         try {
-            const token = localStorage.getItem('token');
-            await axios.delete(`https://bizkit-api.onrender.com/api/users/${deleteTarget}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/users/${deleteTarget}`);
             fetchUsers();
         } catch (err) {
             console.error("Failed to delete user", err);
@@ -65,7 +59,8 @@ const UserPage = () => {
                 </div>
 
                 {/* Table */}
-                <table className="w-full text-sm text-left">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[600px]">
                     <thead>
                         <tr className="bg-[#d1d5db] text-gray-800 font-bold text-xs">
                             <th className="px-4 py-2.5 w-16">No</th>
@@ -128,6 +123,7 @@ const UserPage = () => {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* FAB Add Button */}
