@@ -171,13 +171,9 @@ const ProductFormPage = () => {
             }
 
             if (isEdit) {
-                await api.put(`/master/products/${id}`, formDataPayload, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                await api.put(`/master/products/${id}`, formDataPayload);
             } else {
-                await api.post('/master/products', formDataPayload, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                await api.post('/master/products', formDataPayload);
             }
             navigate('/products');
         } catch (error) {

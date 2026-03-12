@@ -1,7 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
 
 	"bizkit-api/config"
 	"bizkit-api/models"
@@ -19,46 +24,74 @@ func GetProducts(c *gin.Context) {
 
 // Create a new product
 func CreateProduct(c *gin.Context) {
-	var input struct {
-		Name        string  `json:"name" binding:"required"`
-		SKU         string  `json:"sku"`
-		Description string  `json:"description"`
-		Image       string  `json:"image"`
-		CategoryID  uint    `json:"category_id" binding:"required"`
-		BrandID     uint    `json:"brand_id" binding:"required"`
-		UnitID      uint    `json:"unit_id" binding:"required"`
-		Price       float64 `json:"price" binding:"required"`
-		Status      string  `json:"status"`
-		HasVariant  bool    `json:"has_variant"`
-		IsFavorite  bool    `json:"is_favorite"`
-		VariantIDs  []uint  `json:"variant_ids"`
-	}
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Parse Multipart Form
+	if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form data"})
 		return
 	}
 
-	status := "Active"
-	if input.Status != "" {
-		status = input.Status
+	name := c.PostForm("name")
+	if name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name is required"})
+		return
 	}
 
-	userID, _ := c.Get("userID")
+	sku := c.PostForm("sku")
+	description := c.PostForm("description")
+	categoryID, _ := strconv.ParseUint(c.PostForm("category_id"), 10, 32)
+	brandID, _ := strconv.ParseUint(c.PostForm("brand_id"), 10, 32)
+	unitID, _ := strconv.ParseUint(c.PostForm("unit_id"), 10, 32)
+	price, _ := strconv.ParseFloat(c.PostForm("price"), 64)
+	status := c.PostForm("status")
+	hasVariant := c.PostForm("has_variant") == "true"
+	isFavorite := c.PostForm("is_favorite") == "true"
+
+	var variantIDs []uint
+	vIDs := c.PostFormArray("variant_ids")
+	for _, vStr := range vIDs {
+		vID, _ := strconv.ParseUint(vStr, 10, 32)
+		variantIDs = append(variantIDs, uint(vID))
+	}
+
+	// Handle Image Upload
+	imagePath := ""
+	file, err := c.FormFile("image")
+	if err == nil {
+		os.MkdirAll("uploads", os.ModePerm)
+		ext := filepath.Ext(file.Filename)
+		filename := fmt.Sprintf("prod_%d%s", time.Now().UnixMilli(), ext)
+		imagePath = "/uploads/" + filename
+		if err := c.SaveUploadedFile(file, "uploads/"+filename); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+			return
+		}
+	}
+
+	if status == "" {
+		status = "Active"
+	}
+
+	val, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userID := val.(uint)
+
 	product := models.Product{
-		Name:        input.Name,
-		SKU:         input.SKU,
-		Description: input.Description,
-		Image:       input.Image,
-		CategoryID:  input.CategoryID,
-		BrandID:     input.BrandID,
-		UnitID:      input.UnitID,
-		Price:       input.Price,
+		Name:        name,
+		SKU:         sku,
+		Description: description,
+		Image:       imagePath,
+		CategoryID:  uint(categoryID),
+		BrandID:     uint(brandID),
+		UnitID:      uint(unitID),
+		Price:       price,
 		Status:      status,
-		HasVariant:  input.HasVariant,
-		IsFavorite:  input.IsFavorite,
+		HasVariant:  hasVariant,
+		IsFavorite:  isFavorite,
 		Audit: models.Audit{
-			CreatedBy: userID.(uint),
+			CreatedBy: userID,
 		},
 	}
 
@@ -71,8 +104,8 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	// Attach Variants if HasVariant is true
-	if input.HasVariant && len(input.VariantIDs) > 0 {
-		for _, vID := range input.VariantIDs {
+	if hasVariant && len(variantIDs) > 0 {
+		for _, vID := range variantIDs {
 			pv := models.ProductVariant{
 				ProductID: product.ID,
 				VariantID: vID,
@@ -101,44 +134,73 @@ func UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	var input struct {
-		Name        string  `json:"name"`
-		SKU         string  `json:"sku"`
-		Description string  `json:"description"`
-		Image       string  `json:"image"`
-		CategoryID  uint    `json:"category_id"`
-		BrandID     uint    `json:"brand_id"`
-		UnitID      uint    `json:"unit_id"`
-		Price       float64 `json:"price"`
-		Status      string  `json:"status"`
-		HasVariant  bool    `json:"has_variant"`
-		IsFavorite  bool    `json:"is_favorite"`
-		VariantIDs  []uint  `json:"variant_ids"`
-	}
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Parse Multipart Form
+	if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form data"})
 		return
 	}
 
-	userID, _ := c.Get("userID")
+	name := c.PostForm("name")
+	sku := c.PostForm("sku")
+	description := c.PostForm("description")
+	categoryID, _ := strconv.ParseUint(c.PostForm("category_id"), 10, 32)
+	brandID, _ := strconv.ParseUint(c.PostForm("brand_id"), 10, 32)
+	unitID, _ := strconv.ParseUint(c.PostForm("unit_id"), 10, 32)
+	price, _ := strconv.ParseFloat(c.PostForm("price"), 64)
+	status := c.PostForm("status")
+	hasVariantStr := c.PostForm("has_variant")
+	isFavoriteStr := c.PostForm("is_favorite")
+
+	var variantIDs []uint
+	vIDs := c.PostFormArray("variant_ids")
+	for _, vStr := range vIDs {
+		vID, _ := strconv.ParseUint(vStr, 10, 32)
+		variantIDs = append(variantIDs, uint(vID))
+	}
+
+	// Handle Image Upload
+	imagePath := product.Image
+	file, err := c.FormFile("image")
+	if err == nil {
+		os.MkdirAll("uploads", os.ModePerm)
+		ext := filepath.Ext(file.Filename)
+		filename := fmt.Sprintf("prod_%d%s", time.Now().UnixMilli(), ext)
+		imagePath = "/uploads/" + filename
+		if err := c.SaveUploadedFile(file, "uploads/"+filename); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+			return
+		}
+	}
+
+	val, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userID := val.(uint)
+
 	tx := config.DB.Begin()
 
 	updates := map[string]interface{}{
-		"name":        input.Name,
-		"sku":         input.SKU,
-		"description": input.Description,
-		"image":       input.Image,
-		"category_id": input.CategoryID,
-		"brand_id":    input.BrandID,
-		"unit_id":     input.UnitID,
-		"price":       input.Price,
-		"has_variant": input.HasVariant,
-		"is_favorite": input.IsFavorite,
-		"updated_by":  userID.(uint),
+		"name":        name,
+		"sku":         sku,
+		"description": description,
+		"image":       imagePath,
+		"category_id": uint(categoryID),
+		"brand_id":    uint(brandID),
+		"unit_id":     uint(unitID),
+		"price":       price,
+		"updated_by":  userID,
 	}
-	if input.Status != "" {
-		updates["status"] = input.Status
+
+	if hasVariantStr != "" {
+		updates["has_variant"] = (hasVariantStr == "true")
+	}
+	if isFavoriteStr != "" {
+		updates["is_favorite"] = (isFavoriteStr == "true")
+	}
+	if status != "" {
+		updates["status"] = status
 	}
 
 	if err := tx.Model(&product).Updates(updates).Error; err != nil {
@@ -154,8 +216,8 @@ func UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	if input.HasVariant && len(input.VariantIDs) > 0 {
-		for _, vID := range input.VariantIDs {
+	if (hasVariantStr == "true") && len(variantIDs) > 0 {
+		for _, vID := range variantIDs {
 			pv := models.ProductVariant{
 				ProductID: product.ID,
 				VariantID: vID,

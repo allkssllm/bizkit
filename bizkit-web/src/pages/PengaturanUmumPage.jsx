@@ -38,11 +38,7 @@ const PengaturanUmumPage = () => {
             const formData = new FormData();
             formData.append('logo', logoFile);
             
-            const response = await api.post('/settings', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await api.post('/settings', formData);
 
             setCurrentLogo(response.data.data?.logo || '');
             setMessage('Pengaturan berhasil disimpan!');
