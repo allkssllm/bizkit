@@ -27,13 +27,11 @@ func main() {
 	// Initialize Gin app
 	r := gin.Default()
 
-	// Configure CORS (SUDAH DIPERBAIKI UNTUK VERCEL)
+	// Configure CORS
 	r.Use(cors.New(cors.Config{
-		// AllowOriginFunc digunakan agar mengizinkan request dari domain manapun (Vercel/Localhost)
 		AllowOriginFunc: func(origin string) bool {
-			return true
+			return true // izinkan semua origin
 		},
-		AllowOrigins: []string{"https://bizkit-api.onrender.com"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -41,30 +39,24 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Auth routes (Phase 1)
+	// ✅ Public routes - tanpa auth
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "pong"})
+	})
+	r.HEAD("/ping", func(c *gin.Context) {
+		c.Status(200)
+	})
+
+	// Auth routes - public
 	auth := r.Group("/api/auth")
 	{
 		auth.POST("/login", controllers.Login)
 	}
 
-	// Protected routes group
+	// ✅ Protected routes - butuh token
 	api := r.Group("/api")
 	api.Use(middleware.AuthMiddleware())
 	{
-		api.GET("/ping", func(c *gin.Context) {
-			userID, _ := c.Get("userID")
-			role, _ := c.Get("role")
-			c.JSON(200, gin.H{
-				"message": "pong",
-				"user_id": userID,
-				"role":    role,
-			})
-		})
-
-		api.HEAD("/ping", func(c *gin.Context) {
-			c.Status(200)
-		})
-
 		// Master Data Routes
 		master := api.Group("/master")
 		{
@@ -157,9 +149,7 @@ func main() {
 		roles := api.Group("/roles")
 		{
 			roles.GET("", controllers.GetRoles)
-			roles.GET("/", controllers.GetRoles)
 			roles.POST("", controllers.CreateRole)
-			roles.POST("/", controllers.CreateRole)
 			roles.PUT("/:id", controllers.UpdateRole)
 			roles.DELETE("/:id", controllers.DeleteRole)
 		}
@@ -178,7 +168,7 @@ func main() {
 	// Run server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8081" // Default port if not specified
+		port = "8081"
 	}
 	r.Run(":" + port)
 }
