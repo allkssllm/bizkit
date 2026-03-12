@@ -27,7 +27,13 @@ func CreateUnit(c *gin.Context) {
 		return
 	}
 
-	unit := models.Unit{Name: input.Name}
+	userID, _ := c.Get("userID")
+	unit := models.Unit{
+		Name: input.Name,
+		Audit: models.Audit{
+			CreatedBy: userID.(uint),
+		},
+	}
 	if err := config.DB.Create(&unit).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create unit"})
 		return
@@ -53,7 +59,13 @@ func UpdateUnit(c *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Model(&unit).Updates(models.Unit{Name: input.Name}).Error; err != nil {
+	userID, _ := c.Get("userID")
+	if err := config.DB.Model(&unit).Updates(models.Unit{
+		Name: input.Name,
+		Audit: models.Audit{
+			UpdatedBy: userID.(uint),
+		},
+	}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update unit"})
 		return
 	}
@@ -77,6 +89,8 @@ func DeleteUnit(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&unit).Update("deleted_by", userID)
 	if err := config.DB.Delete(&unit).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus satuan"})
 		return

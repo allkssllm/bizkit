@@ -28,9 +28,13 @@ func CreateRole(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
 	role := models.Role{
 		Name:        input.Name,
 		Permissions: input.Permissions,
+		Audit: models.Audit{
+			CreatedBy: userID.(uint),
+		},
 	}
 
 	if err := config.DB.Create(&role).Error; err != nil {
@@ -67,6 +71,9 @@ func UpdateRole(c *gin.Context) {
 		updates["permissions"] = input.Permissions
 	}
 
+	userID, _ := c.Get("userID")
+	updates["updated_by"] = userID.(uint)
+
 	if err := config.DB.Model(&role).Updates(updates).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update role"})
 		return
@@ -83,6 +90,8 @@ func DeleteRole(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&role).Update("deleted_by", userID)
 	config.DB.Delete(&role)
 
 	c.JSON(http.StatusOK, gin.H{"data": true})

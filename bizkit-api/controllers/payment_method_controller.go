@@ -42,6 +42,9 @@ func CreatePaymentMethod(c *gin.Context) {
 		ShowInPurchase: input.ShowInPurchase,
 		ShowInSales:    input.ShowInSales,
 		OutletID:       input.OutletID,
+		Audit: models.Audit{
+			CreatedBy: c.MustGet("userID").(uint),
+		},
 	}
 	if err := config.DB.Create(&method).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create payment method"})
@@ -90,6 +93,9 @@ func UpdatePaymentMethod(c *gin.Context) {
 		updates["outlet_id"] = input.OutletID
 	}
 
+	userID, _ := c.Get("userID")
+	updates["updated_by"] = userID.(uint)
+
 	if err := config.DB.Model(&method).Updates(updates).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update payment method"})
 		return
@@ -106,6 +112,8 @@ func DeletePaymentMethod(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&method).Update("deleted_by", userID)
 	config.DB.Delete(&method)
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

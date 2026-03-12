@@ -37,6 +37,7 @@ func CreateVariant(c *gin.Context) {
 		status = input.Status
 	}
 
+	userID, _ := c.Get("userID")
 	variant := models.Variant{
 		Name:        input.Name,
 		Description: input.Description,
@@ -44,6 +45,9 @@ func CreateVariant(c *gin.Context) {
 		MaxChoice:   input.MaxChoice,
 		Status:      status,
 		Options:     input.Options,
+		Audit: models.Audit{
+			CreatedBy: userID.(uint),
+		},
 	}
 	if err := config.DB.Create(&variant).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create variant"})
@@ -76,6 +80,7 @@ func UpdateVariant(c *gin.Context) {
 	}
 
 	// Begin transaction to safely update variant and replace options
+	userID, _ := c.Get("userID")
 	tx := config.DB.Begin()
 
 	if err := tx.Model(&variant).Updates(map[string]interface{}{
@@ -84,18 +89,19 @@ func UpdateVariant(c *gin.Context) {
 		"min_choice":  input.MinChoice,
 		"max_choice":  input.MaxChoice,
 		"status":      input.Status,
+		"updated_by":  userID.(uint),
 	}).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update variant details"})
 		return
 	}
 
-	// Delete old options permanently or soft delete
 	if err := tx.Where("variant_id = ?", variant.ID).Delete(&models.VariantOption{}).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clean old options"})
 		return
 	}
+	// (Note: DeletedBy for nested options skipped as they are hard deleted here or we can just delete)
 
 	// Insert new options
 	for _, opt := range input.Options {
@@ -103,6 +109,9 @@ func UpdateVariant(c *gin.Context) {
 			VariantID: variant.ID,
 			Name:      opt.Name,
 			PriceAdd:  opt.PriceAdd,
+			Audit: models.Audit{
+				UpdatedBy: userID.(uint), // Or CreatedBy since it's a new record
+			},
 		}
 		if err := tx.Create(&newOpt).Error; err != nil {
 			tx.Rollback()
@@ -129,6 +138,8 @@ func DeleteVariant(c *gin.Context) {
 
 	// Also delete variant options
 	config.DB.Where("variant_id = ?", variant.ID).Delete(&models.VariantOption{})
+	userID, _ := c.Get("userID")
+	config.DB.Model(&variant).Update("deleted_by", userID)
 	config.DB.Delete(&variant)
 
 	c.JSON(http.StatusOK, gin.H{"data": true})

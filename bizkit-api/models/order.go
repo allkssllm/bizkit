@@ -16,6 +16,7 @@ type PaymentMethod struct {
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type Order struct {
@@ -35,6 +36,7 @@ type Order struct {
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 	Items           []OrderItem    `gorm:"foreignKey:OrderID" json:"items"`
 }
 
@@ -49,4 +51,5 @@ type OrderItem struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }

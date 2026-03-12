@@ -44,6 +44,7 @@ func CreateProduct(c *gin.Context) {
 		status = input.Status
 	}
 
+	userID, _ := c.Get("userID")
 	product := models.Product{
 		Name:        input.Name,
 		SKU:         input.SKU,
@@ -56,6 +57,9 @@ func CreateProduct(c *gin.Context) {
 		Status:      status,
 		HasVariant:  input.HasVariant,
 		IsFavorite:  input.IsFavorite,
+		Audit: models.Audit{
+			CreatedBy: userID.(uint),
+		},
 	}
 
 	tx := config.DB.Begin()
@@ -117,6 +121,7 @@ func UpdateProduct(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
 	tx := config.DB.Begin()
 
 	updates := map[string]interface{}{
@@ -130,6 +135,7 @@ func UpdateProduct(c *gin.Context) {
 		"price":       input.Price,
 		"has_variant": input.HasVariant,
 		"is_favorite": input.IsFavorite,
+		"updated_by":  userID.(uint),
 	}
 	if input.Status != "" {
 		updates["status"] = input.Status
@@ -178,6 +184,8 @@ func DeleteProduct(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&product).Update("deleted_by", userID)
 	config.DB.Delete(&product)
 
 	c.JSON(http.StatusOK, gin.H{"data": true})

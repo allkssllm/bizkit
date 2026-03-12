@@ -27,7 +27,13 @@ func CreateBrand(c *gin.Context) {
 		return
 	}
 
-	brand := models.Brand{Name: input.Name}
+	userID, _ := c.Get("userID")
+	brand := models.Brand{
+		Name: input.Name,
+		Audit: models.Audit{
+			CreatedBy: userID.(uint),
+		},
+	}
 	if err := config.DB.Create(&brand).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create brand"})
 		return
@@ -53,7 +59,13 @@ func UpdateBrand(c *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Model(&brand).Updates(models.Brand{Name: input.Name}).Error; err != nil {
+	userID, _ := c.Get("userID")
+	if err := config.DB.Model(&brand).Updates(models.Brand{
+		Name: input.Name,
+		Audit: models.Audit{
+			UpdatedBy: userID.(uint),
+		},
+	}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update brand"})
 		return
 	}
@@ -77,6 +89,8 @@ func DeleteBrand(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&brand).Update("deleted_by", userID)
 	if err := config.DB.Delete(&brand).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus merek"})
 		return

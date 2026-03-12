@@ -71,6 +71,9 @@ func CreatePromotion(c *gin.Context) {
 		DetailCondition: input.DetailCondition,
 		DetailPromo:     input.DetailPromo,
 		Status:          status,
+		Audit: models.Audit{
+			CreatedBy: c.MustGet("userID").(uint),
+		},
 	}
 
 	if err := config.DB.Create(&promotion).Error; err != nil {
@@ -164,6 +167,9 @@ func UpdatePromotion(c *gin.Context) {
 		updates["status"] = input.Status
 	}
 
+	userID, _ := c.Get("userID")
+	updates["updated_by"] = userID.(uint)
+
 	if err := config.DB.Model(&promotion).Updates(updates).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update promotion"})
 		return
@@ -180,6 +186,8 @@ func DeletePromotion(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&promotion).Update("deleted_by", userID)
 	config.DB.Delete(&promotion)
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

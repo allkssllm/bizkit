@@ -48,6 +48,9 @@ func CreateShift(c *gin.Context) {
 		AmountIn:    input.AmountIn,
 		AmountOut:   input.AmountOut,
 		Balance:     input.Balance,
+		Audit: models.Audit{
+			CreatedBy: c.MustGet("userID").(uint),
+		},
 	}
 
 	if err := config.DB.Create(&shift).Error; err != nil {

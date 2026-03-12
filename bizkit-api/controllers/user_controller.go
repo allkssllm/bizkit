@@ -56,6 +56,9 @@ func CreateUser(c *gin.Context) {
 		Password: string(hashedPassword),
 		RoleID:   input.RoleID,
 		OutletID: input.OutletID,
+		Audit: models.Audit{
+			CreatedBy: c.MustGet("userID").(uint),
+		},
 	}
 
 	if err := config.DB.Create(&user).Error; err != nil {
@@ -118,6 +121,9 @@ func UpdateUser(c *gin.Context) {
 		updates["password"] = string(hashedPassword)
 	}
 
+	userID, _ := c.Get("userID")
+	updates["updated_by"] = userID.(uint)
+
 	if err := config.DB.Model(&user).Updates(updates).Error; err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "users.idx_users_username") {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Username sudah digunakan, silakan pilih username lain."})
@@ -139,6 +145,8 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&user).Update("deleted_by", userID)
 	config.DB.Delete(&user)
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }
@@ -166,7 +174,11 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Model(&user).Update("password", string(hashedPassword)).Error; err != nil {
+	userID, _ := c.Get("userID")
+	if err := config.DB.Model(&user).Updates(map[string]interface{}{
+		"password":   string(hashedPassword),
+		"updated_by": userID.(uint),
+	}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
 		return
 	}

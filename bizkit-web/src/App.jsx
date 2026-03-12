@@ -30,7 +30,7 @@ function Login() {
     setError('')
 
     try {
-      const response = await axios.post('https://bizkit-api.onrender.com/api/auth/login', {
+      const response = await axios.post(import.meta.env.VITE_API_URL + '/auth/login', {
         username,
         password
       })

@@ -50,6 +50,9 @@ func CreateAttendance(c *gin.Context) {
 		Photo:       input.Photo,
 		CheckInTime: &now,
 		Date:        date,
+		Audit: models.Audit{
+			CreatedBy: c.MustGet("userID").(uint),
+		},
 	}
 
 	if err := config.DB.Create(&attendance).Error; err != nil {
@@ -70,7 +73,11 @@ func UpdateAttendance(c *gin.Context) {
 	}
 
 	now := time.Now()
-	if err := config.DB.Model(&attendance).Update("check_out_time", now).Error; err != nil {
+	userID, _ := c.Get("userID")
+	if err := config.DB.Model(&attendance).Updates(map[string]interface{}{
+		"check_out_time": now,
+		"updated_by":     userID.(uint),
+	}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update attendance"})
 		return
 	}

@@ -27,7 +27,13 @@ func CreateCategory(c *gin.Context) {
 		return
 	}
 
-	category := models.Category{Name: input.Name}
+	userID, _ := c.Get("userID")
+	category := models.Category{
+		Name: input.Name,
+		Audit: models.Audit{
+			CreatedBy: userID.(uint),
+		},
+	}
 	if err := config.DB.Create(&category).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create category"})
 		return
@@ -53,7 +59,13 @@ func UpdateCategory(c *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Model(&category).Updates(models.Category{Name: input.Name}).Error; err != nil {
+	userID, _ := c.Get("userID")
+	if err := config.DB.Model(&category).Updates(models.Category{
+		Name: input.Name,
+		Audit: models.Audit{
+			UpdatedBy: userID.(uint),
+		},
+	}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update category"})
 		return
 	}
@@ -69,6 +81,8 @@ func DeleteCategory(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+	config.DB.Model(&category).Update("deleted_by", userID)
 	config.DB.Delete(&category)
 
 	c.JSON(http.StatusOK, gin.H{"data": true})

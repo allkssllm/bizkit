@@ -12,6 +12,7 @@ type Category struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type Brand struct {
@@ -20,6 +21,7 @@ type Brand struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type Unit struct {
@@ -28,6 +30,7 @@ type Unit struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type Product struct {
@@ -51,6 +54,7 @@ type Product struct {
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt   `gorm:"index" json:"-"`
+	Audit
 }
 
 type Variant struct {
@@ -64,6 +68,7 @@ type Variant struct {
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt  `gorm:"index" json:"-"`
+	Audit
 }
 
 // ProductVariant maps a Product to its chosen Variants (and potentially specific options if needed, but KasirKuliner usually binds the root Variant to the Product)
@@ -75,6 +80,7 @@ type ProductVariant struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type VariantOption struct {
@@ -85,6 +91,7 @@ type VariantOption struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type PriceCategory struct {
@@ -93,6 +100,7 @@ type PriceCategory struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Audit
 }
 
 type ProductPrice struct {
@@ -103,4 +111,5 @@ type ProductPrice struct {
 	PriceCategory   PriceCategory `gorm:"foreignKey:PriceCategoryID" json:"price_category"`
 	CreatedAt       time.Time     `json:"created_at"`
 	UpdatedAt       time.Time     `json:"updated_at"`
+	Audit
 }
