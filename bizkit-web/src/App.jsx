@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Layout from './components/Layout'
@@ -46,6 +46,9 @@ function Login() {
       setLoading(false)
     }
   }
+  useEffect(() => {
+    axios.get('https://bizkit-api.onrender.com/api/ping').catch(() => {})
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">

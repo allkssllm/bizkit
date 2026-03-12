@@ -60,6 +60,10 @@ func main() {
 			})
 		})
 
+		api.HEAD("/ping", func(c *gin.Context) {
+			c.Status(200)
+		})
+
 		// Master Data Routes
 		master := api.Group("/master")
 		{
